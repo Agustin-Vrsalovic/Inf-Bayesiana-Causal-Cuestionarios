@@ -287,11 +287,13 @@ Si cambian los datos o el conjunto de comparación, puede dejar de ser constante
 
 # %%
 respuestas["Predicciones"] = [
-0, # 0. Siempre
-0, # 1. A veces
-0, # 2. Nunca
+0.15, # 0. Siempre
+0.05, # 1. A veces
+0.8, # 2. Nunca
 """
 Justifique
+No es necesario respetar el orden en que se observaron los datos, ya que la regla de la cadena permite descomponer la probabilidad conjunta usando cualquier orden.
+Mientras se mantengan bien definidas las probabilidades condicionales, P(d1|H)P(d2|d1,H) y P(d2|H)P(d1|d2,H) dan el mismo resultado.
 """,
 ]
 
@@ -307,11 +309,12 @@ Justifique
 
 # %%
 respuestas["Valor de verdad"] = [
-0, # 0. Siempre
-0, # 1. A veces
-0, # 2. Nunca
+0.8, # 0. Siempre
+0.05, # 1. A veces
+0.15, # 2. Nunca
 """
 Justifique
+Si P(d∣H)=0, entonces la Hipotesis siempre quedara descartada, debido a que es una situacion imposible
 """,
 ]
 
@@ -331,13 +334,15 @@ Justifique
 
 # %%
 respuestas["Teorías causales"] = [
-0, # 0. El modelo causal que se corresponde con la realidad causal subyacente nunca puede ser mejor prediciendo que los complejos algoritmos de AI/ML.
-0, # 1. El modelo causal que se corresponde con la realidad causal subyacente a veces puede ser mejor, y a veces peor, que los complejos algoritmos de AI/ML.
-0, # 2. El modelo causal que se corresponde con la realidad causal subyacente nunca puede ser peor prediciendo que los complejos algoritmos de AI/ML.
-0, # 3. No son comparables porque los modelos causales solo explican, no predicen.
-0, # 4. Ninguna de las anteriores
+0.05, # 0. El modelo causal que se corresponde con la realidad causal subyacente nunca puede ser mejor prediciendo que los complejos algoritmos de AI/ML.
+0.05, # 1. El modelo causal que se corresponde con la realidad causal subyacente a veces puede ser mejor, y a veces peor, que los complejos algoritmos de AI/ML.
+0.7, # 2. El modelo causal que se corresponde con la realidad causal subyacente nunca puede ser peor prediciendo que los complejos algoritmos de AI/ML.
+0.05, # 3. No son comparables porque los modelos causales solo explican, no predicen.
+0.15, # 4. Ninguna de las anteriores
 """
 Justifique
+Un modelo causal representa correctamente la realidad subyacente, contiene toda la información necesaria para explicar y predecir los datos.
+Un algoritmo de IA puede igualar ese desempeño, pero no debería superarlo usando la misma información.
 """,
 ]
 
@@ -354,11 +359,12 @@ Justifique
 
 # %%
 respuestas["Predicción e información"] = [
-0, # 0. Siempre
-0, # 1. A veces
-0, # 2. Nunca
+0.05, # 0. Siempre
+0.15, # 1. A veces
+0.8, # 2. Nunca
 """
 Justifique
+En la teoría de la información de Shannon cuanto más predecible es un evento, menos información aporta cuando ocurre.
 """,
 ]
 
@@ -375,11 +381,13 @@ Justifique
 
 # %%
 respuestas["Modelos e información"] = [
-0, # 0. Siempre
-0, # 1. A veces
-0, # 2. Nunca
+0.8, # 0. Siempre
+0.15, # 1. A veces
+0.05, # 2. Nunca
 """
 Justifique
+Al evaluar modelos se prefiere el que asigna mayor probabilidad a los datos observados.
+Eso equivale a minimizar la sorpresa, es decir, maximiza la información que el modelo explica sobre los datos.
 """,
 ]
 
@@ -394,11 +402,13 @@ Justifique
 
 # %%
 respuestas["Evaluación de modelos"] = [
-0, # 0. Siempre
-0, # 1. A veces
-0, # 2. Nunca
+0.05, # 0. Siempre
+0.4, # 1. A veces
+0.55, # 2. Nunca
 """
 Justifique
+Teniendo datos observacionales no siempre se puede identificar el modelo causal verdadero.
+Distintos modelos causales pueden generar las mismas distribuciones de datos, por lo que hacen falta supuestos adicionales o intervenciones para distinguirlos.
 """,
 ]
 
@@ -413,11 +423,13 @@ Justifique
 
 # %%
 respuestas["Contrafactuales"] = [
-0, # 0. Siempre
-0, # 1. A veces
-0, # 2. Nunca
+0.8, # 0. Siempre
+0.15, # 1. A veces
+0.05, # 2. Nunca
 """
 Justifique
+Si conocemos los mecanismos causales probabilísticos de cada variable, podemos combinar esa información con los datos observados
+para estimar qué habría pasado si las condiciones hubieran sido distintas.
 """,
 ]
 
@@ -448,19 +460,20 @@ Justifique
 
 # %%
 respuestas["Diversificación"] = [
-0, # 0. Recursos asignados a Cara: 0.0
-0, # 1. Recursos asignados a Cara: 0.1
-0, # 2. Recursos asignados a Cara: 0.2
-0, # 3. Recursos asignados a Cara: 0.3
-0, # 4. Recursos asignados a Cara: 0.4
-0, # 5. Recursos asignados a Cara: 0.5
-0, # 6. Recursos asignados a Cara: 0.6
-0, # 7. Recursos asignados a Cara: 0.7
-0, # 8. Recursos asignados a Cara: 0.8
-0, # 9. Recursos asignados a Cara: 0.9
-0, # 10. Recursos asignados a Cara: 1.0
+0.01, # 0. Recursos asignados a Cara: 0.0
+0.015, # 1. Recursos asignados a Cara: 0.1
+0.02, # 2. Recursos asignados a Cara: 0.2
+0.025, # 3. Recursos asignados a Cara: 0.3
+0.03, # 4. Recursos asignados a Cara: 0.4
+0.8,  # 5. Recursos asignados a Cara: 0.5
+0.03, # 6. Recursos asignados a Cara: 0.6
+0.025, # 7. Recursos asignados a Cara: 0.7
+0.02, # 8. Recursos asignados a Cara: 0.8
+0.015, # 9. Recursos asignados a Cara: 0.9
+0.01, # 10. Recursos asignados a Cara: 1.0
 """
 Justifique
+Por mas que uno crea que conviene apostarle mas a la Cara, como ambas tienen la misma probabilidad; la mejor estrategia a largo plazo es apostarle el 0.5 a cada lado de la moneda
 """,
 ]
 
@@ -479,10 +492,11 @@ Justifique
 
 # %%
 respuestas["Apuesta individual"] = [
-0, # 0. No
-0, # 1. Sí
+0.1, # 0. No
+0.9, # 1. Sí
 """
 Justifique
+Como vimos antes, a largo plazo conviene la estrategia del 50 | 50, por un tema de probabilidades y disminuir el riesgo de perder todos los recursos.
 """,
 ]
 
@@ -502,11 +516,12 @@ Justifique
 
 # %%
 respuestas["Teoría de Utilidad Esperada"] = [
-0, # 0. Siempre
-0, # 1. A veces
-0, # 2. Nunca
+0.8, # 0. Siempre
+0.15, # 1. A veces
+0.05, # 2. Nunca
 """
 Justifique
+Como ya vimos y lo explica la teoria de la utilidad esperada; si la esperanza de los recursos es positiva, si conviene apostar el 50 | 50.
 """,
 ]
 
@@ -524,11 +539,13 @@ Justifique
 
 # %%
 respuestas["Fondo común"] = [
-0, # 0. No conviene
-0, # 1. Indistinto
-0, # 2. Sí conviene
+0.05, # 0. No conviene
+0.05, # 1. Indistinto
+0.9, # 2. Sí conviene
 """
 Justifique
+Si, conviene. Ya que al aumentar la cantidad de personas, disminuis la incertidumbre, por lo tante disminuye el riesgo.
+Como la esperanza es positiva, a largo plazo se espera ganar.
 """,
 ]
 
@@ -545,12 +562,12 @@ Justifique
 
 # %%
 respuestas["Impuestos"] = [
-0, # 0. Disminuye
-0, # 1. No cambia
-0, # 2. Aumenta
+0.1, # 0. Disminuye
+0.1, # 1. No cambia
+0.8, # 2. Aumenta
 """
 Justifique
+Aumenta porque al dejar de aportar al fondo común seguimos recibiendo los beneficios del crecimiento colectivo, pero nuestro aporte deja de reducir nuestro capital disponible.
+Al tener menos Capital arriesgado y se mantienen las ganancias, esto hace que la tasa de crecimiento efectiva de nuestros recursos sea mayor.
 """,
 ]
-
-
