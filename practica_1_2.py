@@ -218,8 +218,12 @@ def estimar_p(posterior_p: Callable, observaciones: int = 60) -> pd.DataFrame:
 
     estimaciones_p = pd.DataFrame(columns=["p", "posterior"])
 
-    for p in P_GRID:
-        estimaciones_p.loc[len(estimaciones_p)] = [p, posterior_p(p, no_monty)]
+    posteriores = posterior_p(P_GRID, no_monty)
+
+    for p, posterior in zip(P_GRID, posteriores):
+        estimaciones_p.loc[len(estimaciones_p)] = [p, posterior]
+    #for p in P_GRID:
+    #    estimaciones_p.loc[len(estimaciones_p)] = [p, posterior_p(P_GRID, no_monty)]
 
     return estimaciones_p
 
@@ -242,12 +246,14 @@ def p_episodio_datos_MA(
     Datos: Lista de tuplas (c, s, r)
     """
 
+    posteriores = posterior_p(P_GRID, datos)
+
     prediccion = 0
 
-    for p in P_GRID:
+    for p, posterior in zip(P_GRID, posteriores):
         prediccion += (
             p_csr_p(c=c, s=s, r=r, p=p)
-            * posterior_p(p, datos)
+            * posterior
         )
 
     return prediccion
@@ -343,7 +349,6 @@ def log_bayes_factor(log_pdatos_mi: float, log_pdatos_mj: float) -> float:
 # 10. Predicción típica del modelo alternativo sobre los datos
 # ------------------------------------------------------------
 
-
 def log_media_geometrica(datos: List[Tuple[int, int, int]], m: int) -> float:
     """
     log_10(Media Geométrica) = (1/N) * log_10(P(Datos | M))
@@ -351,7 +356,8 @@ def log_media_geometrica(datos: List[Tuple[int, int, int]], m: int) -> float:
     dado el modelo considerado.
     m ∈ {0, 1}
     """
-    pass
+
+    return 10**(log_pDatos_M(datos, m) / (len(datos)*3))
 
 
 def log_media_geometrica_MA(datos: List[Tuple[int, int, int]]) -> float:
@@ -360,7 +366,7 @@ def log_media_geometrica_MA(datos: List[Tuple[int, int, int]]) -> float:
     Logaritmo de la predicción típica (media geométrica) de los datos
     dado el modelo alternativo.
     """
-    pass
+    return 10**(log_p_datos_MA(datos) / (len(datos)*3))
 
 
 # ------------------------------------------------------------
@@ -375,7 +381,7 @@ def pM_con_alternativo(m: Literal[0, 1, "MA"]) -> float:
     Prior uniforme sobre los 3 modelos (Base, Monty Hall, Alternativo).
     m ∈ {0, 1, 'MA'}
     """
-    pass
+    return 1/3
 
 
 def p_datos_con_alternativo(datos: List[Tuple[int, int, int]]) -> float:
@@ -384,7 +390,9 @@ def p_datos_con_alternativo(datos: List[Tuple[int, int, int]]) -> float:
     Probabilidad total de ver los datos usando la contribución
     de los 3 modelos (Base, Monty Hall y Alternativo).
     """
-    pass
+    return (pDatos_M(datos=datos, m=0) * pM_con_alternativo(0) +
+            pDatos_M(datos=datos, m=1) * pM_con_alternativo(1) +
+            p_datos_MA(datos=datos) * pM_con_alternativo("MA"))
 
 
 def pM_datos_con_alternativo(
@@ -396,7 +404,14 @@ def pM_datos_con_alternativo(
     (distribución a posteriori) considerando los 3 modelos.
     m ∈ {0, 1, 'MA'}
     """
-    pass
+    if m == 0:
+        numerador = pDatos_M(datos, 0) * pM_con_alternativo(0)
+    elif m == 1:
+        numerador = pDatos_M(datos, 1) * pM_con_alternativo(1)
+    else:
+        numerador = p_datos_MA(datos) * pM_con_alternativo("MA")
+
+    return numerador / p_datos_con_alternativo(datos)
 
 
 def evolucion_posterior_con_alternativo(
@@ -407,7 +422,13 @@ def evolucion_posterior_con_alternativo(
     considerando los 3 modelos (Base, Monty Hall y Alternativo).
     m ∈ {0, 1, 'MA'}
     """
-    pass
+    posteriores= []
+    
+    for episodio in range(1, len(datos) + 1):
+        datos_observados = datos[:episodio]
+        posteriores.append(pM_datos_con_alternativo(m=m, datos=datos_observados))
+
+    return posteriores
 
 
 # ------------------------------------------------------------
