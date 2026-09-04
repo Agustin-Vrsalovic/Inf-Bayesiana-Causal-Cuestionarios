@@ -133,7 +133,11 @@ def p_p(p: float) -> float:
     Prior sobre la memoria del presentador.
     p ∈ [0, 1]
     """
-    return 0.5
+    #return 0.5
+
+    if 0 < p and 1 > p:
+        n = len(P_GRID)
+        return 1/n
 
 
 def p_a_p(a: int, p: float) -> float:
@@ -187,6 +191,8 @@ def p_p_datos(p: float, datos: List[Tuple[int, int, int]]) -> float:
                                r=datos[i][2],
                                p=p)
     return p_p(p) * productoria
+
+
 
 def posterior_p(grilla, datos):
     valores = []
