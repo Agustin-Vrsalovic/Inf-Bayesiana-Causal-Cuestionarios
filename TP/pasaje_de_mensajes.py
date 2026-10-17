@@ -6,6 +6,8 @@ from scipy.special import betaln, gammaln
 #Para el gráfico final
 from scipy.stats import beta as beta_dist
 
+from matplotlib.lines import Line2D
+
 # Datos: conversiones (n) y tamaño (N) de cada grupo, por mes
 data = pd.read_csv("TP/CSVs/01-Incrementalidad.csv", encoding="utf-8-sig")
 def serie(tipo):
@@ -48,7 +50,7 @@ def calcular_mensajes(n, N, lam, prior=(1, 20)):
     #Combinamos la información de los meses vecinos, sin usar la del mes a predecir
     within_prior = forward_prior + backward_prior
 
-    # Incorporamos los datos observados del mes, para obtener la posterior
+    #Incorporamos los datos observados del mes, para obtener la posterior
     posterior = within_prior + likelihood
 
     return {
@@ -88,11 +90,11 @@ def calcular_log_evidencia(n, N, within_prior):
     #Logaritmo del coeficiente binomial
     log_coef = (gammaln(N + 1) - gammaln(n + 1) - gammaln(N - n + 1))
 
-    # Log-evidencia predictiva de cada mes
+    #Log-evidencia predictiva de cada mes
     log_evidencias = (log_coef + betaln(alpha + n, beta + N - n) - betaln(alpha, beta)
     )
 
-    # Una sola puntuación para toda la serie
+    #Una sola puntuación para toda la serie
     return log_evidencias.sum()
 
 
@@ -134,7 +136,7 @@ resultados_T = evaluar_lambdas(n_T, N_T, valores_lambda)
 mejor_C = resultados_C.loc[resultados_C["log_evidencia"].idxmax()]
 mejor_T = resultados_T.loc[resultados_T["log_evidencia"].idxmax()]
 
-print("1er Busqueda | MEJOR LAMBDA POR SERIE")
+print("1er Busqueda de Lambda | Mejores Valores:")
 print(f"Control:     lambda = {mejor_C['lambda']:.4f}")
 print(f"Tratamiento: lambda = {mejor_T['lambda']:.4f}")
 
@@ -176,7 +178,7 @@ resultados_T_finos = evaluar_lambdas(n_T, N_T, valores_T)
 mejor_C = resultados_C_finos.loc[resultados_C_finos["log_evidencia"].idxmax()]
 mejor_T = resultados_T_finos.loc[resultados_T_finos["log_evidencia"].idxmax()]
 
-print("2da Busqueda | MEJORES VALORES DE LAMBDA")
+print("2da Busqueda de Lambda | Mejores Valores:")
 print(f"Control:     {mejor_C['lambda']:.5f}")
 print(f"Tratamiento: {mejor_T['lambda']:.5f}")
 
@@ -209,15 +211,15 @@ PRIOR_INICIAL = (1.0, 20.0)
 mensajes_C = calcular_mensajes(n_C, N_C, lam=LAMBDA_CONTROL, prior=PRIOR_INICIAL)
 mensajes_T = calcular_mensajes(n_T, N_T, lam=LAMBDA_TRATAMIENTO, prior=PRIOR_INICIAL)
 
-#Extraemos los parámetros Beta del posterior de cada mes
+#Extraemos los parámetros de la Beta del posterior de cada mes
 alpha_C, beta_C = mensajes_C["posterior"].T
 alpha_T, beta_T = mensajes_T["posterior"].T
 
-# Medias posteriores
+#Medias posteriores
 media_C = alpha_C / (alpha_C + beta_C)
 media_T = alpha_T / (alpha_T + beta_T)
 
-# Intervalos creíbles centrales del 95 %
+# Intervalos de credibilidad centrales del 95 %
 ic_C_inf = beta_dist.ppf(0.025, alpha_C, beta_C)
 ic_C_sup = beta_dist.ppf(0.975, alpha_C, beta_C)
 
@@ -233,8 +235,8 @@ beta_T_ind = 20 + N_T - n_T
 
 # Probabilidad de que el tratamiento supere al control
 # Mediante muestras de los posteriores Beta, sin usar MCMC
-rng = np.random.default_rng(2026)
-N_SIM = 200_000
+rng = np.random.default_rng(111)
+N_SIM = 200000
 
 p_temporal = []
 p_independiente = []
@@ -282,8 +284,7 @@ resultados.to_csv(
 x = np.arange(len(meses))
 
 fig, (ax1, ax2) = plt.subplots(
-    2, 1, figsize=(11, 9), sharex=True
-)
+    2, 1, figsize=(11, 9), sharex=True)
 
 # Grafico del desempeño observado y posterior temporal.
 for nombre, color, media, inferior, superior, observada in [
@@ -301,41 +302,36 @@ for nombre, color, media, inferior, superior, observada in [
         ecolor=color,
         marker="o",
         capsize=3,
-        label=f"{nombre}: posterior e IC 95 %"
-    )
+        label=f"{nombre}: posterior e IC 95 %")
 
     ax1.scatter(
         x,
         100 * observada,
         color=color,
         marker="x",
-        label=f"{nombre}: observado"
-    )
+        label=f"{nombre}: observado")
 
 ax1.set_ylabel("Conversiones (%)")
 ax1.set_title("Desempeño mensual: observado y posterior temporal")
 ax1.legend(fontsize=8, ncol=2)
 ax1.grid(alpha=0.25)
 
-# Probabilidad de superioridad: temporal vs. independiente
+#Probabilidad (q > p)
 ax2.plot(
     x, p_temporal, marker="o",
-    label="Forward-backward temporal"
-)
+    label="Forward-backward temporal")
 
 ax2.plot(
     x, p_independiente, marker="s", linestyle="--",
-    label="Meses independientes"
-)
+    label="Meses independientes")
 
 ax2.axhline(
     0.95, linestyle=":",
-    label="Referencia 0.95"
-)
+    label="Referencia 0.95")
 
 ax2.set_xticks(x, [str(m) for m in meses], rotation=45)
 ax2.set_ylim(0, 1.02)
-ax2.set_xlabel("Mes (AAAAMM)")
+ax2.set_xlabel("Mes")
 ax2.set_ylabel("P(q > p | datos)")
 ax2.set_title("Probabilidad de que el tratamiento supere al control")
 ax2.legend(fontsize=8)
@@ -345,6 +341,70 @@ fig.tight_layout()
 plt.savefig(
     "incrementalidad_forward_backward_resultados.png",
     dpi=160,
-    bbox_inches="tight"
-)
+    bbox_inches="tight")
 plt.show()
+
+#Gráfico de la distribución conjunta de control y tratamiento.
+
+def graficar_conjuntas(alpha_control, beta_control,
+                       alpha_tratamiento, beta_tratamiento, titulo):
+
+    valores = np.linspace(0.0025, 0.0065, 250)
+
+    fig, axes = plt.subplots(3, 3, figsize=(12, 10))
+    axes = axes.flatten()
+
+    for t in range(len(meses)):
+
+        # Densidad posterior de control y tratamiento.
+        densidad_p = beta_dist.pdf(
+            valores, alpha_control[t], beta_control[t]
+        )
+
+        densidad_q = beta_dist.pdf(
+            valores, alpha_tratamiento[t], beta_tratamiento[t]
+        )
+
+        # Producto de las dos densidades:
+        # filas = tratamiento, columnas = control.
+        conjunta = np.outer(densidad_q, densidad_p)
+
+        ax = axes[t]
+
+        # Graficamos la distribucion conjunta.
+        ax.contourf(
+            valores * 100,
+            valores * 100,
+            conjunta,
+            levels=20
+        )
+
+        # Diagonal q = p.
+        ax.plot(
+            valores * 100,
+            valores * 100,
+            "k--",
+            linewidth=1.5
+        )
+
+        ax.set_title(str(meses[t]))
+        ax.set_xlim(0.25, 0.65)
+        ax.set_ylim(0.25, 0.65)
+        ax.set_aspect("equal")
+        ax.set_xlabel("Control (%)")
+        ax.set_ylabel("Tratamiento (%)")
+
+    fig.suptitle(titulo, fontsize=14)
+    plt.tight_layout()
+    plt.show()
+
+
+#Modelo temporal:
+graficar_conjuntas(
+    alpha_C, beta_C, alpha_T, beta_T,
+    "Distribuciones conjuntas - Modelo temporal")
+
+#Modelo independiente:
+graficar_conjuntas(
+    alpha_C_ind, beta_C_ind, alpha_T_ind, beta_T_ind,
+    "Distribuciones conjuntas - Modelo independiente")
