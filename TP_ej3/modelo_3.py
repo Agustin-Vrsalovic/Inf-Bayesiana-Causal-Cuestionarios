@@ -246,15 +246,9 @@ def main():
         factor_se = calcular_factor_maximo_harmony(s, covse_base)
         factor_sp = calcular_factor_maximo_harmony(1 - x, covsp_base)
 
-        covse = pm.Deterministic(
-            "covse",
-            covse_base * factor_se * rho_covse
-        )
+        covse = pm.Deterministic("covse", covse_base * factor_se * rho_covse)
 
-        covsp = pm.Deterministic(
-            "covsp",
-            covsp_base * factor_sp * rho_covsp
-        )
+        covsp = pm.Deterministic("covsp", covsp_base * factor_sp * rho_covsp)
 
         #Probabilidades de los patrones
         prob_enfermos = calcular_probabilidades_harmony(s, covse)
@@ -290,15 +284,9 @@ def main():
 
     print(resumen_harmony)
 
-    print(
-        "Cantidad de divergencias:",
-        int(trace_harmony.sample_stats["diverging"].sum())
-    )
+    print("Cantidad de divergencias:", int(trace_harmony.sample_stats["diverging"].sum()))
 
-    print(
-        "R-hat máximo:",
-        resumen_harmony["r_hat"].max()
-    )
+    print("R-hat máximo:", resumen_harmony["r_hat"].max())
 
 
     #Graficos de Harmony: valores verdaderos contra posteriores
@@ -342,8 +330,7 @@ def main():
         ax.grid(axis="x", alpha=0.3)
 
 
-    #Figura 1: prevalencias, sensibilidades y especificidades
-
+    #Prevalencias, sensibilidades y especificidades
     fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 
     graficar_parametro(
@@ -377,8 +364,7 @@ def main():
     plt.show()
 
 
-    #Figura 2: covarianzas
-
+    #Covarianzas
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
 
     etiquetas_pares = ["Tests 1-2", "Tests 1-3", "Tests 2-3"]
